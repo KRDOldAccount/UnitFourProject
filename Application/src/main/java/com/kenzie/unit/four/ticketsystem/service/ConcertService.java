@@ -78,5 +78,6 @@ public class ConcertService {
 
     public void deleteConcert(String concertId) {
         // Your code here
+        concertRepository.deleteById(concertId);
     }
 }
