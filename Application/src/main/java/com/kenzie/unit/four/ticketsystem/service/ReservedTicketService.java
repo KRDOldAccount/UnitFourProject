@@ -2,6 +2,7 @@ package com.kenzie.unit.four.ticketsystem.service;
 
 import com.kenzie.unit.four.ticketsystem.repositories.ReservedTicketRepository;
 import com.kenzie.unit.four.ticketsystem.repositories.model.ReserveTicketRecord;
+import com.kenzie.unit.four.ticketsystem.service.model.Concert;
 import com.kenzie.unit.four.ticketsystem.service.model.ReservedTicket;
 
 import org.springframework.http.HttpStatus;
@@ -61,8 +62,10 @@ public class ReservedTicketService {
 
     public ReservedTicket reserveTicket(ReservedTicket reservedTicket) {
         // Your code here
-        if(reservedTicket.getConcertId() == null || reservedTicket.getReservationClosed() == true) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Actor not found");
+        Concert concert = concertService.findByConcertId(reservedTicket.getConcertId());
+
+        if(concert == null || concert.getReservationClosed() == true) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Actor not found");
         }
         ReserveTicketRecord reserveTicketRecord = new ReserveTicketRecord();
         reserveTicketRecord.setConcertId(reservedTicket.getConcertId());

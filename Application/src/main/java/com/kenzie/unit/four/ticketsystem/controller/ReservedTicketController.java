@@ -45,17 +45,7 @@ public class ReservedTicketController {
     public ResponseEntity<ReservedTicketResponse> reserveTicket(
             @RequestBody ReservedTicketCreateRequest reservedTicketCreateRequest) {
 
-//        AmazonDynamoDB client = AmazonDynamoDBClientBuilder.standard().build();
-//        DynamoDB dynamoDB = new DynamoDB(client);
-//
-//        Table table = dynamoDB.getTable("Concert");
-//
-//        Item item = table.getItem("Id", reservedTicketCreateRequest.getConcertId());
-//
 //        // Add your code here
-//        if(item == null) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-//        }
         ReservedTicket reservedTicket = new ReservedTicket(reservedTicketCreateRequest.getConcertId(),
                 randomUUID().toString(), LocalDateTime.now().toString());
         reservedTicketService.reserveTicket(reservedTicket);
