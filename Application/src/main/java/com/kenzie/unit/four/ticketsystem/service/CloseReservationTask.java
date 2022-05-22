@@ -26,9 +26,11 @@ public class CloseReservationTask implements Runnable {
     public void run() {
        // Your code here
         ReservedTicket reservedTicket = reservedTicketsQueue.poll();
+
         if(reservedTicket == null) {
             return;
         }
+
         reservedTicket = reservedTicketService.findByReserveTicketId(reservedTicket.getTicketId());
 
         Duration duration = Duration.between(LocalDateTime.parse(reservedTicket.getDateOfReservation()),
