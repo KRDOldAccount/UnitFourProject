@@ -1,11 +1,14 @@
 package com.kenzie.unit.four.ticketsystem.service;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.kenzie.unit.four.ticketsystem.repositories.ReservedTicketRepository;
 import com.kenzie.unit.four.ticketsystem.repositories.model.ReserveTicketRecord;
 import com.kenzie.unit.four.ticketsystem.service.model.Concert;
 import com.kenzie.unit.four.ticketsystem.service.model.ReservedTicket;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -93,7 +96,23 @@ public class ReservedTicketService {
 
     public List<ReservedTicket> findByConcertId(String concertId) {
         // Your code here
-        return null;
+        List<ReserveTicketRecord> reserveTicketRecordList = reservedTicketRepository.findByConcertId(concertId);
+
+//        reserveTicketRecordList = reservedTicketRepository.findByConcertId(concertId);
+
+        if (reserveTicketRecordList == null ||  reserveTicketRecordList.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Actor not found");
+        }
+        List<ReservedTicket> reservedTicketList = new ArrayList<>();
+
+        for (ReserveTicketRecord rtr: reserveTicketRecordList) {
+            ReservedTicket reservedTicket = new ReservedTicket(rtr.getConcertId(), rtr.getTicketId(),
+                    rtr.getDateOfReservation(), rtr.getReservationClosed(), rtr.getDateReservationClosed(),
+                    rtr.getPurchasedTicket());
+            reservedTicketList.add(reservedTicket);
+        }
+
+        return reservedTicketList;
     }
 
     public ReservedTicket updateReserveTicket(ReservedTicket reservedTicket) {

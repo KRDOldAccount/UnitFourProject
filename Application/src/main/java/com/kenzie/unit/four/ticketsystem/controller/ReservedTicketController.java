@@ -9,6 +9,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
+import com.kenzie.unit.four.ticketsystem.controller.model.ConcertResponse;
 import com.kenzie.unit.four.ticketsystem.controller.model.ReservedTicketCreateRequest;
 import com.kenzie.unit.four.ticketsystem.controller.model.ReservedTicketResponse;
 import com.kenzie.unit.four.ticketsystem.service.ReservedTicketService;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.UUID.randomUUID;
@@ -62,13 +64,31 @@ public class ReservedTicketController {
 
     // TODO - Task 3: getAllReserveTicketsByConcertId() - GET `/concerts/{concertId}`
     // Add the correct annotation
+    @GetMapping("concerts/{concertId}")
     public ResponseEntity<List<ReservedTicketResponse>> getAllReserveTicketsByConcertId(
             @PathVariable("concertId") String concertId) {
 
         // Add your code here
+        List<ReservedTicket> reservedTicketList = reservedTicketService.findByConcertId(concertId);
+
+        if (reservedTicketList == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<ReservedTicketResponse> response = new ArrayList<>();
+        for (ReservedTicket rt : reservedTicketList) {
+            ReservedTicketResponse rtr = new ReservedTicketResponse();
+            rtr.setConcertId(rt.getConcertId());
+            rtr.setTicketId(rt.getTicketId());
+            rtr.setDateOfReservation(rt.getDateOfReservation());
+            rtr.setReservationClosed(rt.getReservationClosed());
+            rtr.setDateReservationClosed(rt.getDateReservationClosed());
+            rtr.setPurchasedTicket(rt.getTicketPurchased());
+            response.add(rtr);
+        }
 
         // Return your List<ReservedTicketResponse> instead of null
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(response);
     }
 
 }

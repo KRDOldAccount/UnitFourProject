@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static java.util.UUID.randomUUID;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -106,11 +107,72 @@ public class ReservedTicketServiceTest {
      *  ------------------------------------------------------------------------ **/
 
     // Write additional tests here
+//im going to write my two tests one happy one unhappy here
+    @Test
+    void reserveTicketHappy() {
+        // GIVEN
+        Concert concert = new Concert("fd842ae8-25c4-4a03-bf14-aa19afea6ef4", "WowPiyQOvu0tGRr8lZ0OdtvRkOBsRo3OMbZonignup8OX2fEpiw2pcPemNsQAVbf",
+                "2022-05-03", 90.00, false);
+
+        ReserveTicketRecord record = new ReserveTicketRecord();
+        record.setTicketId(randomUUID().toString());
+        record.setConcertId(concert.getId());
+        record.setDateOfReservation("record2date");
+        record.setDateReservationClosed("closed2date");
+        record.setReservationClosed(false);
+        record.setPurchasedTicket(false);
+
+        ReservedTicket reservedTicket = new ReservedTicket(
+                record.getConcertId(),
+                record.getTicketId(),
+                record.getDateOfReservation(),
+                record.getReservationClosed(),
+                record.getDateReservationClosed(),
+                record.getPurchasedTicket());
+
+        when(concertService.findByConcertId(record.getConcertId())).thenReturn(concert);
+
+        // WHEN
+        ReservedTicket reservedTicket1 = reservedTicketService.reserveTicket(reservedTicket);
+
+        // THEN
+        verify(reservedTicketRepository).save(record);
+
+        Assertions.assertNotNull(reservedTicket1);
+    }
+
+    @Test
+    void reserveTicketUnhappy() {
+        // GIVEN
+        Concert concert = null;
+
+        ReserveTicketRecord record = new ReserveTicketRecord();
+        record.setTicketId(randomUUID().toString());
+        record.setConcertId("fd842ae8-25c4-4a03-bf14-aa19afea6ef4");
+        record.setDateOfReservation("record2date");
+        record.setDateReservationClosed("closed2date");
+        record.setReservationClosed(false);
+        record.setPurchasedTicket(false);
+
+        ReservedTicket reservedTicket = new ReservedTicket(
+                record.getConcertId(),
+                record.getTicketId(),
+                record.getDateOfReservation(),
+                record.getReservationClosed(),
+                record.getDateReservationClosed(),
+                record.getPurchasedTicket());
+
+        when(concertService.findByConcertId(record.getConcertId())).thenReturn(concert);
+
+        // WHEN// THEN
+        assertThrows(ResponseStatusException.class, () -> reservedTicketService.reserveTicket(reservedTicket));
+
+    }
 
     /** ------------------------------------------------------------------------
      *  reservedTicketService.findByReserveTicketId
      *  ------------------------------------------------------------------------ **/
-
+//use this as example(below)
     @Test
     void findByReserveTicketId() {
         // GIVEN
