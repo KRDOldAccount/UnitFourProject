@@ -146,6 +146,26 @@ public class ConcertServiceTest {
      *  ------------------------------------------------------------------------ **/
 
     // Write additional tests here
+    @Test
+    void updateConcert() {
+        // GIVEN
+        String concertId = randomUUID().toString();
+
+        Concert concert = new Concert(concertId, "concertname", "recorddate", 10.0, false);
+
+        ConcertRecord concertRecord = new ConcertRecord();
+        concertRecord.setId(concert.getId());
+        concertRecord.setDate(concert.getDate());
+        concertRecord.setName(concert.getName());
+        concertRecord.setTicketBasePrice(concert.getTicketBasePrice());
+        concertRecord.setReservationClosed(concert.getReservationClosed());
+
+        concertService.updateConcert(concert);
+
+        verify(concertRepository).save(concertRecord);
+
+    }
+
 
     /** ------------------------------------------------------------------------
      *  concertService.deleteConcert

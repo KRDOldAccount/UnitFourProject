@@ -74,6 +74,8 @@ public class ReservedTicketService {
         reserveTicketRecord.setConcertId(reservedTicket.getConcertId());
         reserveTicketRecord.setTicketId(reservedTicket.getTicketId());
         reserveTicketRecord.setDateOfReservation(reservedTicket.getDateOfReservation());
+        reserveTicketRecord.setDateReservationClosed(reservedTicket.getDateReservationClosed());
+        reserveTicketRecord.setPurchasedTicket(reservedTicket.getTicketPurchased());
         reservedTicketRepository.save(reserveTicketRecord);
         reservedTicketsQueue.add(reservedTicket);
         return reservedTicket;
