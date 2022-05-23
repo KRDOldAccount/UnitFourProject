@@ -1,8 +1,10 @@
 package com.kenzie.unit.four.ticketsystem.service;
 
 import com.kenzie.unit.four.ticketsystem.repositories.PurchaseTicketRepository;
+import com.kenzie.unit.four.ticketsystem.repositories.model.ConcertRecord;
 import com.kenzie.unit.four.ticketsystem.repositories.model.PurchasedTicketRecord;
 import com.kenzie.unit.four.ticketsystem.service.model.PurchasedTicket;
+import com.kenzie.unit.four.ticketsystem.service.model.ReservedTicket;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,8 +14,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.util.UUID.randomUUID;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 public class PurchasedTicketServiceTest {
     private PurchaseTicketRepository purchaseTicketRepository;
@@ -32,6 +34,23 @@ public class PurchasedTicketServiceTest {
      *  ------------------------------------------------------------------------ **/
 
     // Write additional tests here
+    @Test
+    void purchaseTicket() {
+        // GIVEN
+        String reserveTicketId = randomUUID().toString();
+
+        ReservedTicket reservedTicket = new ReservedTicket("concertId", "ticketId", "dateOfReservation",
+                false, "dateReservationClosed", true);
+
+        // WHEN
+        when(reservedTicketService.findByReserveTicketId(reserveTicketId)).thenReturn(reservedTicket);
+
+        purchasedTicketService.purchaseTicket(reserveTicketId, 33.00);
+
+        // THEN
+        verify(purchaseTicketRepository).save(any());
+        verify(reservedTicketService).updateReserveTicket(any());
+    }
 
     /** ------------------------------------------------------------------------
      *  purchasedTicketService.findByConcertId
