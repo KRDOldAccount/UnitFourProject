@@ -14,20 +14,22 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.UUID.randomUUID;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 public class ConcertServiceTest {
     private ConcertRepository concertRepository;
     private CacheStore cacheStore;
     private ConcertService concertService;
+    private Concert concert;
 
     @BeforeEach
     void setup() {
         concertRepository = mock(ConcertRepository.class);
         cacheStore = mock(CacheStore.class);
         concertService = new ConcertService(concertRepository, cacheStore);
+        concert = new Concert("id", "name", "11",
+                12.00, false);
     }
 
     /** ------------------------------------------------------------------------
@@ -149,22 +151,28 @@ public class ConcertServiceTest {
     @Test
     void updateConcert() {
         // GIVEN
-        String concertId = randomUUID().toString();
 
-        Concert concert = new Concert(concertId, "concertname", "recorddate", 10.0, false);
-
-        ConcertRecord concertRecord = new ConcertRecord();
-        concertRecord.setId(concert.getId());
-        concertRecord.setDate(concert.getDate());
-        concertRecord.setName(concert.getName());
-        concertRecord.setTicketBasePrice(concert.getTicketBasePrice());
-        concertRecord.setReservationClosed(concert.getReservationClosed());
+        when(concertRepository.existsById(concert.getId())).thenReturn(true);
 
         concertService.updateConcert(concert);
 
-        verify(concertRepository).save(concertRecord);
+        verify(concertRepository).save(any(ConcertRecord.class));
 
     }
+
+    @Test
+    void updateConcert1() {
+        // GIVEN
+
+        when(concertRepository.existsById(concert.getId())).thenReturn(false);
+
+        concertService.updateConcert(concert);
+
+        verify(concertRepository, times(1)).existsById(concert.getId());
+        verifyZeroInteractions(concertRepository);
+
+    }
+
 
 
     /** ------------------------------------------------------------------------
@@ -172,5 +180,15 @@ public class ConcertServiceTest {
      *  ------------------------------------------------------------------------ **/
 
     // Write additional tests here
+
+    @Test
+    void deleteConcert() {
+        // GIVEN
+
+        concertService.deleteConcert(concert.getId());
+
+        verify(concertRepository).deleteById(any());
+
+    }
 
 }
