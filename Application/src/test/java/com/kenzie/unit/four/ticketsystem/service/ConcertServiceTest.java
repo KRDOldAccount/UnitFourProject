@@ -157,6 +157,7 @@ public class ConcertServiceTest {
         concertService.updateConcert(concert);
 
         verify(concertRepository).save(any(ConcertRecord.class));
+        verify(cacheStore).evict(any());
 
     }
 
@@ -170,7 +171,7 @@ public class ConcertServiceTest {
 
         verify(concertRepository, times(1)).existsById(concert.getId());
         verifyZeroInteractions(concertRepository);
-
+        verifyZeroInteractions(cacheStore);
     }
 
 
@@ -188,6 +189,7 @@ public class ConcertServiceTest {
         concertService.deleteConcert(concert.getId());
 
         verify(concertRepository).deleteById(any());
+        verify(cacheStore).evict(any());
 
     }
 
